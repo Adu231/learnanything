@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ArrowDownRight, ArrowUpRight, Check, ChevronRight, Clock3, Code2, LockKeyhole, Menu, Play, Plus, X, Zap } from 'lucide-react';
+import { ArrowDownRight, ArrowUpRight, Bot, Check, ChevronRight, Clock3, Code2, LockKeyhole, Menu, Move, Play, Plus, Send, Sparkles, X, Zap } from 'lucide-react';
 import { comingSoon, courses, domains } from './data';
 import './styles.css';
 
@@ -32,23 +32,6 @@ function Cursor() {
 
 function Brand({ compact = false }) {
   return <a className={`brand ${compact ? 'brand-compact' : ''}`} href="#top" onClick={(e) => { e.preventDefault(); scrollToId('top'); }} aria-label="Learn Anything home"><span className="brand-mark">{'{ }'}</span><span className="brand-name">LEARN <em>ANYTHING</em></span></a>;
-}
-
-function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
-  useEffect(() => { const handle = () => setScrolled(window.scrollY > 30); window.addEventListener('scroll', handle); handle(); return () => window.removeEventListener('scroll', handle); }, []);
-  const links = [['Home', 'top'], ['What You Can Learn', 'domains'], ['Courses', 'courses'], ['About Us', 'about'], ['Contact', 'contact']];
-  const go = (id) => { setOpen(false); scrollToId(id); };
-  return <header className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}>
-    <div className="nav-shell"><Brand />
-      <nav className={`nav-links ${open ? 'nav-open' : ''}`} aria-label="Primary navigation">
-        {links.map(([label, id], index) => <a className={index === 0 ? 'nav-active' : ''} key={id} href={`#${id}`} onClick={(e) => { e.preventDefault(); go(id); }}>{label}</a>)}
-      </nav>
-      <button className="button button-small nav-cta" onClick={() => go('courses')}>Explore Courses <ArrowUpRight size={15} /></button>
-      <button className="menu-button" onClick={() => setOpen(!open)} aria-label="Toggle navigation">{open ? <X size={20} /> : <Menu size={20} />}</button>
-    </div>
-  </header>;
 }
 
 const codeBits = ['{ }', '</>', '01', 'const', 'function', 'import', 'API', 'AI', 'CSS', 'JS', 'React', 'Node'];
@@ -84,6 +67,102 @@ function Domains({ onOpen }) {
   return <section className="section domains-section" id="domains"><div className="page-width"><SectionHeading index="01" eyebrow="CHOOSE YOUR DIRECTION" title={<>WHAT DO YOU WANT<br /><span>TO LEARN?</span></>} copy="Choose a domain and start exploring." /><div className="domain-grid">{domains.map((domain, index) => <DomainCard key={domain.id} domain={domain} index={index} onOpen={onOpen} />)}</div></div></section>;
 }
 
+const floatingDomains = [
+  { id: 'web', name: 'WEB DEVELOPMENT', classPos: 'pos-top-left', anim: 'float-anim-1' },
+  { id: 'app', name: 'APP DEVELOPMENT', classPos: 'pos-top-right', anim: 'float-anim-2' },
+  { id: 'react', name: 'REACT', classPos: 'pos-mid-left', anim: 'float-anim-3' },
+  { id: 'js', name: 'JAVASCRIPT', classPos: 'pos-mid-right', anim: 'float-anim-4' },
+  { id: 'python', name: 'PYTHON', classPos: 'pos-bottom-left', anim: 'float-anim-1' },
+  { id: 'ai', name: 'AI & MACHINE LEARNING', classPos: 'pos-bottom-right', anim: 'float-anim-2' },
+  { id: 'data', name: 'DATA SCIENCE', classPos: 'pos-far-top-left', anim: 'float-anim-3' },
+  { id: 'security', name: 'CYBERSECURITY', classPos: 'pos-far-top-right', anim: 'float-anim-4' },
+  { id: 'design', name: 'UI/UX', classPos: 'pos-far-bottom-left', anim: 'float-anim-1' },
+  { id: 'node', name: 'NODE.JS', classPos: 'pos-far-bottom-right', anim: 'float-anim-2' },
+  { id: 'git', name: 'GIT & GITHUB', classPos: 'pos-top-center', anim: 'float-anim-3' },
+  { id: 'cloud', name: 'CLOUD & DEVOPS', classPos: 'pos-bottom-center', anim: 'float-anim-4' },
+];
+
+function InteractiveLearning() {
+  const [activeDomain, setActiveDomain] = useState(floatingDomains[0]);
+  const [animating, setAnimating] = useState(false);
+
+  const selectDomain = (domain) => {
+    if (domain.id === activeDomain.id) return;
+    setAnimating(true);
+    setActiveDomain(domain);
+    setTimeout(() => setAnimating(false), 300);
+  };
+
+  return (
+    <section className="section universe-section" id="interactive">
+      <div className="page-width">
+        <SectionHeading
+          index="02"
+          eyebrow="INTERACTIVE LEARNING UNIVERSE"
+          title={<>CHOOSE WHAT YOU<br /><span>WANT TO LEARN.</span></>}
+          copy="Click any floating domain to load its video lesson directly into the player."
+        />
+        <div className="universe-stage">
+          <div className="floating-orbit-container">
+            {floatingDomains.map((domain) => {
+              const isActive = domain.id === activeDomain.id;
+              return (
+                <button
+                  key={domain.id}
+                  className={`floating-domain ${domain.classPos} ${domain.anim} ${isActive ? 'is-active' : ''}`}
+                  onClick={() => selectDomain(domain)}
+                  type="button"
+                  data-cursor
+                >
+                  <span className="domain-dot" />
+                  <span className="domain-text">{domain.name}</span>
+                </button>
+              );
+            })}
+          </div>
+          <div className="universe-player-wrapper">
+            <div className="demo-player universe-player">
+              <div className={`player-status ${animating ? 'title-pulse' : ''}`}>
+                <span className="live-dot" /> <strong className="player-domain-title">{activeDomain.name} / DEMO LESSON</strong>
+              </div>
+              <div className="player-video-wrapper">
+                <iframe
+                  className="player-iframe"
+                  src="https://www.youtube.com/embed/W6NZfCO5SIk?autoplay=1&rel=0&modestbranding=1"
+                  title={`${activeDomain.name} - Demo Lesson`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+            <div className="universe-active-bar">
+              <span>ACTIVE TOPIC: <em>{activeDomain.name}</em></span>
+              <span className="bar-tip">Click any floating topic to switch</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+  useEffect(() => { const handle = () => setScrolled(window.scrollY > 30); window.addEventListener('scroll', handle); handle(); return () => window.removeEventListener('scroll', handle); }, []);
+  const links = [['Home', 'top'], ['What You Can Learn', 'domains'], ['Interactive', 'interactive'], ['Courses', 'courses'], ['About Us', 'about'], ['Contact', 'contact']];
+  const go = (id) => { setOpen(false); scrollToId(id); };
+  return <header className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}>
+    <div className="nav-shell"><Brand />
+      <nav className={`nav-links ${open ? 'nav-open' : ''}`} aria-label="Primary navigation">
+        {links.map(([label, id], index) => <a className={index === 0 ? 'nav-active' : ''} key={id} href={`#${id}`} onClick={(e) => { e.preventDefault(); go(id); }}>{label}</a>)}
+      </nav>
+      <button className="button button-small nav-cta" onClick={() => go('courses')}>Explore Courses <ArrowUpRight size={15} /></button>
+      <button className="menu-button" onClick={() => setOpen(!open)} aria-label="Toggle navigation">{open ? <X size={20} /> : <Menu size={20} />}</button>
+    </div>
+  </header>;
+}
+
 function CodeThumbnail({ course, compact = false }) {
   return <div className={`code-thumb palette-${course.palette} ${compact ? 'thumb-compact' : ''}`}><div className="thumb-noise" /><div className="thumb-top"><span className="terminal-dots"><i /><i /><i /></span><span>{course.language}</span><span className="thumb-num">01 / {String(course.lessons).padStart(2, '0')}</span></div><div className="thumb-code"><span className="code-fade">// learn / build / repeat</span><strong>{course.symbol}</strong><span className="code-caret">_</span></div><div className="thumb-bottom"><span>LESSON 01</span><span>{course.duration}</span></div>{!compact && <span className="thumb-play"><Play size={16} fill="currentColor" /></span>}</div>;
 }
@@ -93,7 +172,7 @@ function CourseCard({ course, index, onOpen }) {
 }
 
 function Courses({ onOpen }) {
-  return <section className="section courses-section" id="courses"><div className="page-width"><SectionHeading index="02" eyebrow="STATIC COURSE LIBRARY" title={<>EXPLORE<br /><span>COURSES.</span></>} copy="Start with something you want to understand." /><div className="course-grid">{courses.map((course, index) => <CourseCard key={course.id} course={course} index={index} onOpen={onOpen} />)}</div><div className="course-foot reveal"><span>MORE SIGNAL, LESS NOISE.</span><button className="text-button" onClick={() => scrollToId('coming')}>See what is next <ArrowUpRight size={16} /></button></div></div></section>;
+  return <section className="section courses-section" id="courses"><div className="page-width"><SectionHeading index="03" eyebrow="STATIC COURSE LIBRARY" title={<>EXPLORE<br /><span>COURSES.</span></>} copy="Start with something you want to understand." /><div className="course-grid">{courses.map((course, index) => <CourseCard key={course.id} course={course} index={index} onOpen={onOpen} />)}</div><div className="course-foot reveal"><span>MORE SIGNAL, LESS NOISE.</span><button className="text-button" onClick={() => scrollToId('coming')}>See what is next <ArrowUpRight size={16} /></button></div></div></section>;
 }
 
 function ComingSoon() {
@@ -102,11 +181,11 @@ function ComingSoon() {
 
 const features = [{ number: '01', title: 'Learn at Your Pace', copy: 'Explore topics whenever you want.', icon: Clock3 }, { number: '02', title: 'Practical Knowledge', copy: 'Focus on concepts that help you build.', icon: Zap }, { number: '03', title: 'Multiple Domains', copy: 'Explore technology from different perspectives.', icon: Code2 }, { number: '04', title: 'Always Growing', copy: 'New courses and topics are coming.', icon: Plus }];
 function Features() {
-  return <section className="section features-section" id="features"><div className="page-width"><SectionHeading index="03" eyebrow="THE WAY WE TEACH" title={<>LEARNING<br /><span>WITHOUT THE NOISE.</span></>} /><div className="feature-list">{features.map((feature, index) => { const Icon = feature.icon; return <div className={`feature-row reveal reveal-delay-${(index % 4) + 1}`} key={feature.number}><span className="feature-number">{feature.number}</span><Icon className="feature-icon" size={24} strokeWidth={1.5} /><div><h3>{feature.title}</h3><p>{feature.copy}</p></div><ArrowUpRight className="feature-arrow" size={20} /></div>; })}</div></div></section>;
+  return <section className="section features-section" id="features"><div className="page-width"><SectionHeading index="04" eyebrow="THE WAY WE TEACH" title={<>LEARNING<br /><span>WITHOUT THE NOISE.</span></>} /><div className="feature-list">{features.map((feature, index) => { const Icon = feature.icon; return <div className={`feature-row reveal reveal-delay-${(index % 4) + 1}`} key={feature.number}><span className="feature-number">{feature.number}</span><Icon className="feature-icon" size={24} strokeWidth={1.5} /><div><h3>{feature.title}</h3><p>{feature.copy}</p></div><ArrowUpRight className="feature-arrow" size={20} /></div>; })}</div></div></section>;
 }
 
 function About() {
-  return <section className="section about-section" id="about"><div className="page-width about-grid"><div className="about-copy"><SectionHeading index="04" eyebrow="THE WHY" title={<>LEARNING SHOULD<br /><span>HAVE NO LIMITS.</span></>} /><p className="about-lede reveal">Learn Anything is built around a simple idea — technology and knowledge should be easier to explore. Discover a topic, understand the fundamentals and keep building.</p><button className="text-button reveal" onClick={() => scrollToId('contact')}>Keep exploring <ArrowUpRight size={17} /></button></div><div className="about-terminal reveal"><div className="terminal-top"><span><i /><i /><i /></span><span>learn-anything / philosophy</span><span>01</span></div><div className="terminal-body"><span className="terminal-brace">{'{ }'}</span><span className="terminal-command">$ <b>keep</b> going<span className="terminal-caret">_</span></span><div className="terminal-steps"><span><b>01</b> LEARN</span><span><b>02</b> BUILD</span><span><b>03</b> REPEAT</span></div></div></div></div></section>;
+  return <section className="section about-section" id="about"><div className="page-width about-grid"><div className="about-copy"><SectionHeading index="05" eyebrow="THE WHY" title={<>LEARNING SHOULD<br /><span>HAVE NO LIMITS.</span></>} /><p className="about-lede reveal">Learn Anything is built around a simple idea — technology and knowledge should be easier to explore. Discover a topic, understand the fundamentals and keep building.</p><button className="text-button reveal" onClick={() => scrollToId('contact')}>Keep exploring <ArrowUpRight size={17} /></button></div><div className="about-terminal reveal"><div className="terminal-top"><span><i /><i /><i /></span><span>learn-anything / philosophy</span><span>01</span></div><div className="terminal-body"><span className="terminal-brace">{'{ }'}</span><span className="terminal-command">$ <b>keep</b> going<span className="terminal-caret">_</span></span><div className="terminal-steps"><span><b>01</b> LEARN</span><span><b>02</b> BUILD</span><span><b>03</b> REPEAT</span></div></div></div></div></section>;
 }
 
 function CTA() {
@@ -125,13 +204,157 @@ function CourseModal({ item, onClose }) {
   return <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label={`${data.title} details`} onMouseDown={(event) => event.target === event.currentTarget && onClose()}><div className="course-modal"><button className="modal-close" onClick={onClose} aria-label="Close details"><X size={20} /></button><div className="modal-grid"><div className="modal-media">{started ? <div className="demo-player"><div className="player-status"><span className="live-dot" /> DEMO LESSON / PLAYBACK</div><div className="player-video-wrapper"><iframe className="player-iframe" src="https://www.youtube.com/embed/W6NZfCO5SIk?autoplay=1&rel=0&modestbranding=1" title={`${data.title} - Demo Lesson`} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowFullScreen /></div></div> : <div className="modal-preview-wrapper" onClick={() => setStarted(true)}><CodeThumbnail course={data} compact /><button className="modal-play" onClick={(e) => { e.stopPropagation(); setStarted(true); }}><Play size={20} fill="currentColor" /> Preview demo lesson</button></div>}</div><div className="modal-content"><div className="course-tag">{isCourse ? data.tag : 'DOMAIN PATH'}</div><h2>{data.title}</h2><p>{data.description}</p><div className="modal-stats"><span><b>{data.lessons}</b> lessons</span><span><b>{data.duration}</b> total</span><span><b>{data.difficulty}</b> level</span></div><div className="lesson-list"><span className="footer-label">YOU WILL EXPLORE</span>{data.outline.map((lesson, index) => <div key={lesson}><span>{String(index + 1).padStart(2, '0')}</span><p>{lesson}</p><Check size={15} /></div>)}</div><button className="button button-primary modal-start" onClick={() => setStarted(true)}>{started ? 'Playing Demo Lesson' : 'Start Learning'} <ArrowUpRight size={17} /></button></div></div></div></div>;
 }
 
+function AIChatbot() {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStart = React.useRef({ x: 0, y: 0, posX: 0, posY: 0 });
+  const [messages, setMessages] = useState([
+    { sender: 'bot', text: "Hey there! I'm your Learn Anything AI Assistant. Ask me about courses, learning paths, or tech concepts!" }
+  ]);
+  const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = React.useRef(null);
+
+  const handlePointerDown = (e) => {
+    if (e.target.closest('.chat-close') || e.target.closest('button')) return;
+    setIsDragging(true);
+    dragStart.current = { x: e.clientX, y: e.clientY, posX: pos.x, posY: pos.y };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerMove = (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStart.current.x;
+    const dy = e.clientY - dragStart.current.y;
+    setPos({
+      x: dragStart.current.posX + dx,
+      y: dragStart.current.posY + dy
+    });
+  };
+
+  const handlePointerUp = (e) => {
+    if (isDragging) {
+      setIsDragging(false);
+      try { e.currentTarget.releasePointerCapture(e.pointerId); } catch (_) {}
+    }
+  };
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isTyping]);
+
+  const getAIResponse = (text) => {
+    const q = text.toLowerCase();
+    if (q.includes('react')) {
+      return "React is a popular JavaScript library for building user interfaces. Check out our 'React Fundamentals' course to master components and hooks!";
+    } else if (q.includes('python')) {
+      return "Python is awesome for data science, AI, and backend logic. Try our 'Python Basics' course to start coding right away!";
+    } else if (q.includes('start') || q.includes('beginner') || q.includes('where') || q.includes('first')) {
+      return "If you are starting out, we recommend 'HTML & CSS Fundamentals' or 'JavaScript Essentials'!";
+    } else if (q.includes('ai') || q.includes('machine learning')) {
+      return "Artificial Intelligence is our top trending path! Dive into AI & Machine Learning to learn about models and neural networks.";
+    } else if (q.includes('cyber') || q.includes('security')) {
+      return "Cybersecurity protects digital systems. Check out our Cybersecurity domain to explore ethical hacking and security defense!";
+    } else {
+      return `Great question! Learn Anything offers interactive video lessons for ${text}. Scroll up to explore our interactive universe or full course library!`;
+    }
+  };
+
+  const sendMessage = (textToSend) => {
+    const query = textToSend || input;
+    if (!query.trim()) return;
+
+    const userMsg = { sender: 'user', text: query };
+    setMessages((prev) => [...prev, userMsg]);
+    if (!textToSend) setInput('');
+    setIsTyping(true);
+
+    setTimeout(() => {
+      const reply = getAIResponse(query);
+      setMessages((prev) => [...prev, { sender: 'bot', text: reply }]);
+      setIsTyping(false);
+    }, 600);
+  };
+
+  return (
+    <div className="chatbot-widget">
+      {open ? (
+        <div
+          className="chat-window"
+          style={{ transform: `translate3d(${pos.x}px, ${pos.y}px, 0)` }}
+        >
+          <div
+            className="chat-header"
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+          >
+            <div className="chat-title">
+              <Sparkles size={16} className="ai-icon-glow" />
+              <span>LEARN AI ASSISTANT</span>
+            </div>
+            <div className="chat-header-actions">
+              <span className="drag-handle-hint" title="Drag window to move"><Move size={13} /></span>
+              <button className="chat-close" onClick={() => setOpen(false)} aria-label="Close chat">
+                <X size={16} />
+              </button>
+            </div>
+          </div>
+
+          <div className="chat-body">
+            {messages.map((msg, i) => (
+              <div key={i} className={`chat-bubble-row ${msg.sender}`}>
+                {msg.sender === 'bot' && <div className="bot-avatar"><Bot size={14} /></div>}
+                <div className="chat-bubble">{msg.text}</div>
+              </div>
+            ))}
+            {isTyping && (
+              <div className="chat-bubble-row bot">
+                <div className="bot-avatar"><Bot size={14} /></div>
+                <div className="chat-bubble typing-dots">
+                  <span /><span /><span />
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          <div className="chat-prompts">
+            <button onClick={() => sendMessage("What should I learn first?")}>Where to start?</button>
+            <button onClick={() => sendMessage("Tell me about React")}>React</button>
+            <button onClick={() => sendMessage("Explain Python for AI")}>Python AI</button>
+          </div>
+
+          <form className="chat-input-area" onSubmit={(e) => { e.preventDefault(); sendMessage(); }}>
+            <input
+              type="text"
+              placeholder="Ask AI anything..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+            />
+            <button type="submit" aria-label="Send message">
+              <Send size={15} />
+            </button>
+          </form>
+        </div>
+      ) : (
+        <button className="chatbot-toggle-btn" onClick={() => setOpen(true)} aria-label="Open AI Assistant" data-cursor>
+          <Bot size={24} />
+          <span className="toggle-badge">AI</span>
+        </button>
+      )}
+    </div>
+  );
+}
+
 function App() {
   useReveal();
   const [selected, setSelected] = useState(null);
   const openDetail = (item) => setSelected(item);
   const closeDetail = () => setSelected(null);
   const selectedKey = useMemo(() => selected?.id || selected?.name || '', [selected]);
-  return <><Cursor /><Navbar /><main><Hero /><Domains onOpen={openDetail} /><Courses onOpen={openDetail} /><ComingSoon /><Features /><About /><CTA /></main><Footer />{selected && <CourseModal key={selectedKey} item={selected} onClose={closeDetail} />}</>;
+  return <><Cursor /><Navbar /><main><Hero /><Domains onOpen={openDetail} /><InteractiveLearning /><Courses onOpen={openDetail} /><ComingSoon /><Features /><About /><CTA /></main><Footer /><AIChatbot />{selected && <CourseModal key={selectedKey} item={selected} onClose={closeDetail} />}</>;
 }
 
 createRoot(document.getElementById('root')).render(<App />);
